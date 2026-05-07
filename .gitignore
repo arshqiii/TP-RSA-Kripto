@@ -1,3 +1,4 @@
 env
 __pyachache__/
 *.pyc
+.pytest_cache/
