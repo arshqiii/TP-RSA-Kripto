@@ -1,7 +1,7 @@
 from pathlib import Path
 
 def save_key_to_hex_file(key: tuple[int, int], output_path: str):
-    output_path = Path(output_path)
+    output_file = Path(output_path)
     
     if not isinstance(key, tuple) or len(key) != 2:
         raise ValueError("Key harus berupa tuple (n, exponent).")
@@ -19,8 +19,8 @@ def save_key_to_hex_file(key: tuple[int, int], output_path: str):
     key_bytes = key_string.encode("utf-8")
     key_hex = key_bytes.hex()
     
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(key_hex, encoding="utf-8")   
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    output_file.write_text(key_hex, encoding="utf-8")   
 
 def _load_key_from_hex_file(key_path: str):
     key_path = Path(key_path)

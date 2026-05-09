@@ -14,10 +14,10 @@ def _read_exact(fin, length: int) -> bytes:
 
 
 def decrypt_file(ciphertext_path: str, private_key: tuple[int, int], output_path: str) -> dict:
-    input_path = Path(ciphertext_path)
-    output_path = Path(output_path)
+    input_file = Path(ciphertext_path)
+    output_file = Path(output_path)
 
-    if not input_path.is_file():
+    if not input_file.is_file():
         raise FileNotFoundError(f"File input tidak ditemukan: {input_path}")
 
     key_size_bytes = get_key_size_bytes(private_key)
@@ -25,7 +25,7 @@ def decrypt_file(ciphertext_path: str, private_key: tuple[int, int], output_path
     total_blocks = 0
     total_bytes = 0
 
-    with input_path.open("rb") as fin, output_path.open("wb") as fout:
+    with input_file.open("rb") as fin, output_file.open("wb") as fout:
         while True:
             length_prefix = fin.read(4)
             if not length_prefix:
@@ -51,5 +51,5 @@ def decrypt_file(ciphertext_path: str, private_key: tuple[int, int], output_path
     return {
         "blocks": total_blocks,
         "output_bytes": total_bytes,
-        "output_path": str(output_path),
+        "output_path": str(output_file),
     }
