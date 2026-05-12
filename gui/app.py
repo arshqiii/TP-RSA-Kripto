@@ -26,6 +26,17 @@ DEFAULT_KEYS_DIR = Path("keys")
 DEFAULT_OUTPUTS_DIR = Path("outputs")
 
 
+def derive_decryption_output_path(
+    plaintext_path: str | Path,
+    output_dir: str | Path = DEFAULT_OUTPUTS_DIR,
+) -> Path:
+    """Return the default decrypted output path for a selected plaintext file."""
+    source = Path(plaintext_path)
+    if not source.name:
+        return Path(output_dir) / "decrypted_output.bin"
+    return Path(output_dir) / f"decrypted_{source.name}"
+
+
 class RSAOAEPApp:
     """Small demo GUI that integrates the repository's crypto pipeline."""
 
@@ -49,6 +60,7 @@ class RSAOAEPApp:
         self.hash_match_var = tk.StringVar(value="No comparison yet")
 
         self.action_buttons: list[ttk.Button] = []
+        self.plaintext_var.trace_add("write", self._on_plaintext_changed)
 
         self._configure_style()
         self._build_layout()
@@ -127,7 +139,7 @@ class RSAOAEPApp:
         parent.columnconfigure(1, weight=1)
         self._path_row(parent, 0, "Ciphertext file", self.cipher_input_var, "open")
         self._path_row(parent, 1, "Private key", self.private_key_var, "open")
-        self._path_row(parent, 2, "Plaintext output", self.plain_output_var, "save")
+        self._auto_output_row(parent, 2, "Plaintext output", self.plain_output_var)
 
         decrypt_button = ttk.Button(parent, text="Decrypt", command=self._decrypt)
         decrypt_button.grid(row=3, column=1, sticky="w", pady=(8, 0))
@@ -178,6 +190,19 @@ class RSAOAEPApp:
             command=lambda: self._browse(variable, mode),
         ).grid(row=row, column=2, sticky="e", pady=3)
 
+    def _auto_output_row(
+        self,
+        parent: ttk.LabelFrame,
+        row: int,
+        label: str,
+        variable: tk.StringVar,
+    ) -> None:
+        ttk.Label(parent, text=label).grid(row=row, column=0, sticky="w", pady=3)
+        ttk.Entry(parent, textvariable=variable, state="readonly").grid(
+            row=row, column=1, sticky="ew", padx=(8, 8), pady=3
+        )
+        ttk.Label(parent, text="Auto").grid(row=row, column=2, sticky="e", pady=3)
+
     def _readonly_entry(self, parent: ttk.LabelFrame, variable: tk.StringVar) -> ttk.Entry:
         return ttk.Entry(parent, textvariable=variable, state="readonly")
 
@@ -203,6 +228,16 @@ class RSAOAEPApp:
 
         if selected:
             variable.set(selected)
+
+    def _on_plaintext_changed(self, *_args) -> None:
+        plaintext_path = self.plaintext_var.get().strip()
+        if not plaintext_path:
+            return
+
+        decrypted_output_path = derive_decryption_output_path(plaintext_path)
+        self.plain_output_var.set(str(decrypted_output_path))
+        self.original_hash_file_var.set(plaintext_path)
+        self.decrypted_hash_file_var.set(str(decrypted_output_path))
 
     def _generate_keys(self) -> None:
         output_dir = Path(self.key_dir_var.get().strip() or DEFAULT_KEYS_DIR)

@@ -45,10 +45,13 @@ GUI demo flow:
 
 1. Generate a 2048-bit RSA key pair.
 2. Choose a plaintext file.
-3. Encrypt it with `keys/public_key.hex`.
-4. Decrypt the ciphertext with `keys/private_key.hex`.
-5. Compare the SHA-256 hash of the original and decrypted files.
-6. A `MATCH` result proves the decrypted file is identical to the original.
+3. The GUI automatically sets the decryption output to
+   `outputs/decrypted_<original_filename>` so the decrypted file keeps the
+   original extension, for example `decrypted_video.mp4`.
+4. Encrypt it with `keys/public_key.hex`.
+5. Decrypt the ciphertext with `keys/private_key.hex`.
+6. Compare the SHA-256 hash of the original and decrypted files.
+7. A `MATCH` result proves the decrypted file is identical to the original.
 
 ## Generate Keys with CLI
 
