@@ -11,7 +11,7 @@ def encrypt_file(plaintext_path: str, public_key: tuple[int, int], output_path: 
     output_file = Path(output_path)
 
     if not input_file.is_file():
-        raise FileNotFoundError(f"File input tidak ditemukan: {input_path}")
+        raise FileNotFoundError(f"File input tidak ditemukan: {plaintext_path}")
 
     key_size_bytes = get_key_size_bytes(public_key)
     hash_len = 32
